@@ -2,7 +2,7 @@
 #define MAZE_MAZE_HPP
 #include <bitset>
 #include <cassert>
-#include <ostream>
+#include <cstddef>
 
 #include <maze/cell.hpp>
 #include <maze/distance.hpp>
@@ -74,32 +74,6 @@ class Maze {
         return index;
     }
 };
-
-/// Prints representation of \p maze to \p os
-/** Walls are 'X' and Passages are ' '. */
-template <Distance Width, Distance Height>
-auto operator<<(std::ostream& os, Maze<Width, Height> const& maze)
-    -> std::ostream&
-{
-    auto const to_char = [](Cell c) {
-        switch (c) {
-            case Cell::Wall: return 'X';
-            case Cell::Passage: return ' ';
-        }
-    };
-    for (Distance y = 0; y < Height; ++y) {
-        for (Distance x = 0; x < Width; ++x) {
-            if (maze.start() == Point{x, y})
-                os << 'S';
-            else if (maze.end() == Point{x, y})
-                os << 'E';
-            else
-                os << to_char(maze.get({x, y}));
-        }
-        os << '\n';
-    }
-    return os;
-}
 
 }  // namespace maze
 #endif  // MAZE_MAZE_HPP

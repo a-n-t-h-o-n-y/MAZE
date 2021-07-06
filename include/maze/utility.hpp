@@ -16,11 +16,13 @@ namespace maze::utility {
 
 inline auto random_gen = std::mt19937{std::random_device{}()};
 
+inline constexpr auto directions = std::array{
+    Direction::North, Direction::South, Direction::East, Direction::West};
+
 /// Return all four Directions in a random order.
 [[nodiscard]] auto shuffled_directions() -> std::array<Direction, 4>
 {
-    auto init = std::array<Direction, 4>{Direction::North, Direction::South,
-                                         Direction::East, Direction::West};
+    auto init = directions;
     std::shuffle(std::begin(init), std::end(init), random_gen);
     return init;
 }
@@ -61,11 +63,35 @@ template <Distance Width, Distance Height>
     }
 }
 
+/// Return the opposite direction of \p d.
+[[nodiscard]] auto opposite(Direction d) -> Direction
+{
+    switch (d) {
+        case Direction::North: return Direction::South;
+        case Direction::South: return Direction::North;
+        case Direction::East: return Direction::West;
+        case Direction::West: return Direction::East;
+    }
+}
+
 /// Returns true if \p p  is a Cell::Passage in \p maze.
 template <Distance Width, Distance Height>
 [[nodiscard]] auto is_passage(Maze<Width, Height> const& maze, Point p) -> bool
 {
     return maze.get(p) == Cell::Passage;
+}
+
+/// Return true if there is only a single adjacent Cell::Passage to \p p.
+template <Distance Width, Distance Height>
+[[nodiscard]] auto is_dead_end(Maze<Width, Height> const& maze, Point p) -> bool
+{
+    auto passage_count = 0;
+    for (auto const direction : directions) {
+        auto const next = next_point<Width, Height>(p, direction);
+        if (next.has_value() && maze.get(*next) == Cell::Passage)
+            ++passage_count;
+    }
+    return passage_count == 1;
 }
 
 }  // namespace maze::utility

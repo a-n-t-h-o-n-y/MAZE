@@ -5,6 +5,7 @@
 #include <maze/cell.hpp>
 #include <maze/direction.hpp>
 #include <maze/distance.hpp>
+#include <maze/longest_path.hpp>
 #include <maze/maze.hpp>
 #include <maze/utility.hpp>
 
@@ -44,6 +45,9 @@ auto generate_recursive_backtracking(Point const start) -> Maze<Width, Height>
     maze.set_start(start);
     maze.set(start, Cell::Passage);
     detail::do_recursive_backtrack(maze, start);
+    auto const solution = longest_path(maze, start);
+    if (!solution.empty())
+        maze.set_end(solution.back());
     return maze;
 }
 
