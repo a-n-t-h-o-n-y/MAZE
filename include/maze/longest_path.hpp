@@ -50,7 +50,7 @@ namespace maze {
 /// Finds the longest path along \p maze, beginning at \p start.
 /** Returns an ordered list of Points, following Passage cells to the farthest
  *  point from \p start in \p maze. Returns an empty vector if \p maze and \p
- *  start are invalid in some way. */
+ *  start are invalid in some way. \p start should only have one exit passage */
 template <Distance Width, Distance Height>
 [[nodiscard]] auto longest_path(Maze<Width, Height> const& maze,
                                 Point const start) -> std::vector<Point>
