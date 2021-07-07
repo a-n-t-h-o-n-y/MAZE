@@ -14,5 +14,11 @@ struct Point {
     friend auto operator!=(Point, Point) -> bool = default;
 };
 
+/// Only useful for total ordering, y is considered first, then x.
+[[nodiscard]] auto constexpr operator<(Point lhs, Point rhs) -> bool
+{
+    return (lhs.y < rhs.y) || (lhs.y == rhs.y && lhs.x < rhs.x);
+}
+
 }  // namespace maze
 #endif  // MAZE_POINT_HPP
