@@ -52,8 +52,8 @@ namespace maze {
  *  point from \p start in \p maze. Returns an empty vector if \p maze and \p
  *  start are invalid in some way. \p start should only have one exit passage */
 template <Distance Width, Distance Height>
-[[nodiscard]] auto longest_path(Maze<Width, Height> const& maze,
-                                Point const start) -> std::vector<Point>
+[[nodiscard]] auto longest_path_from(Maze<Width, Height> const& maze,
+                                     Point const start) -> std::vector<Point>
 {
     auto solution_path = std::vector<Point>{};
     auto current_path  = std::vector<Point>{};
@@ -71,6 +71,46 @@ template <Distance Width, Distance Height>
     detail::do_longest_path(maze, start, start_entry, 0, max_distance,
                             current_path, solution_path);
     return solution_path;
+}
+
+/// finds all leaf nodes in \p Maze. Points with only a single edge.
+template <Distance Width, Distance Height>
+[[nodiscard]] auto find_all_leaves(Maze<Width, Height> const& m)
+    -> std::vector<Point>
+{
+    auto result = std::vector<Point>{};
+    for (Distance x = 0; x < Width; ++x) {
+        for (Distance y = 0; y < Height; ++y) {
+            if (m.get({x, y}) == Cell::Passage) {
+                auto count = 0;
+                for (auto direction : utility::directions) {
+                    auto const neighbor =
+                        utility::next_point<Width, Height>({x, y}, direction);
+                    if (neighbor.has_value() &&
+                        m.get(*neighbor) == Cell::Passage) {
+                        ++count;
+                    }
+                }
+                if (count == 1)
+                    result.push_back({x, y});
+            }
+        }
+    }
+    return result;
+}
+
+template <Distance Width, Distance Height>
+[[nodiscard]] auto longest_path(Maze<Width, Height> const& m)
+    -> std::vector<Point>
+{
+    auto solution     = std::vector<Point>{};
+    auto const leaves = find_all_leaves(m);
+    for (auto const leaf : leaves) {
+        auto path = longest_path_from(m, leaf);
+        if (path.size() > solution.size())
+            solution = std::move(path);
+    }
+    return solution;
 }
 
 }  // namespace maze
