@@ -1,5 +1,7 @@
 #ifndef MAZE_POINT_HPP
 #define MAZE_POINT_HPP
+#include <compare>
+
 #include <maze/distance.hpp>
 
 namespace maze {
@@ -10,8 +12,7 @@ struct Point {
     Distance x;
     Distance y;
 
-    friend auto operator==(Point, Point) -> bool = default;
-    friend auto operator!=(Point, Point) -> bool = default;
+    friend auto constexpr operator<=>(Point lhs, Point rhs) = default;
 };
 
 /// Only useful for total ordering, y is considered first, then x.

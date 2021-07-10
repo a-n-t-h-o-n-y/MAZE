@@ -3,6 +3,7 @@
 #include <bitset>
 #include <cassert>
 #include <cstddef>
+#include <stdexcept>
 
 #include <maze/cell.hpp>
 #include <maze/distance.hpp>
@@ -22,20 +23,6 @@ class Maze {
     }
 
    public:
-    /// Return the Point where the maze starts.
-    [[nodiscard]] constexpr auto start() const -> Point { return start_; }
-
-    /// Set the point where the maze starts.
-    /** asserts to check bounds in debug builds, logic error if out of bounds */
-    constexpr void set_start(Point p) { start_ = p; }
-
-    /// Return the Point where the maze ends.
-    [[nodiscard]] constexpr auto end() const -> Point { return end_; }
-
-    /// Set the point where the maze ends.
-    /** asserts to check bounds in debug builds, logic error if out of bounds */
-    constexpr void set_end(Point p) { end_ = p; }
-
     /// Get the cell representation at Point \p p.
     /** asserts to check bounds in debug builds, logic error if out of bounds */
     [[nodiscard]] constexpr auto get(Point p) const -> Cell
@@ -50,15 +37,13 @@ class Maze {
    private:
     std::bitset<Width * Height> data_;
 
-    Point start_{0, 0};
-    Point end_{0, 0};
-
    private:
     [[nodiscard]] static constexpr auto to_bit(Cell c) -> bool
     {
         switch (c) {
             case Cell::Wall: return false;
             case Cell::Passage: return true;
+            default: throw std::logic_error{"Invalid Cell"};
         }
     }
 

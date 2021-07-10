@@ -5,7 +5,6 @@
 #include <maze/cell.hpp>
 #include <maze/direction.hpp>
 #include <maze/distance.hpp>
-#include <maze/longest_path.hpp>
 #include <maze/maze.hpp>
 #include <maze/utility.hpp>
 
@@ -35,19 +34,14 @@ void do_recursive_backtrack(Maze<Width, Height>& maze, Point const at)
 
 namespace maze {
 
-/// Generate a maze from \p start with recursive backtracking technique.
+/// Generate a random maze with recursive backtracking technique.
 template <Distance Width, Distance Height>
-auto generate_recursive_backtracking(Point const start) -> Maze<Width, Height>
+[[nodiscard]] auto generate_recursive_backtracking() -> Maze<Width, Height>
 {
-    assert(start.x < Width && start.y < Height);
-
-    auto maze = Maze<Width, Height>{Cell::Wall};
-    maze.set_start(start);
+    auto const start = utility::random_point<Width, Height>();
+    auto maze        = Maze<Width, Height>{Cell::Wall};
     maze.set(start, Cell::Passage);
     detail::do_recursive_backtrack(maze, start);
-    auto const solution = longest_path(maze, start);
-    if (!solution.empty())
-        maze.set_end(solution.back());
     return maze;
 }
 

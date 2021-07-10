@@ -1,7 +1,9 @@
 #ifndef MAZE_DISPLAY_HPP
 #define MAZE_DISPLAY_HPP
 #include <algorithm>
+#include <cassert>
 #include <ostream>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -18,6 +20,7 @@ namespace maze::detail {
     switch (c) {
         case Cell::Wall: return 'X';
         case Cell::Passage: return ' ';
+        default: throw std::logic_error{"Invalid Cell"};
     }
 }
 
@@ -33,19 +36,14 @@ namespace maze::detail {
 namespace maze {
 
 /// Prints representation of \p maze to \p os.
-/** Walls are 'X', Passages are ' ', start is 'S', and end is 'E'. */
+/** Walls are 'X', Passages are ' '. */
 template <Distance Width, Distance Height>
 auto operator<<(std::ostream& os, Maze<Width, Height> const& maze)
     -> std::ostream&
 {
     for (Distance y = 0; y < Height; ++y) {
         for (Distance x = 0; x < Width; ++x) {
-            if (maze.start() == Point{x, y})
-                os << 'S';
-            else if (maze.end() == Point{x, y})
-                os << 'E';
-            else
-                os << detail::to_char(maze.get({x, y}));
+            os << detail::to_char(maze.get({x, y}));
         }
         os << '\n';
     }
@@ -54,7 +52,8 @@ auto operator<<(std::ostream& os, Maze<Width, Height> const& maze)
 
 /// Prints representation of \p maze_and_solution to \p os.
 /** Walls are 'X', Passages are ' ', start is 'S', end is 'E', and solution is
- *  '.'. This is a relatively expensive function! */
+ *  '.'. This is a relatively expensive function! Start is the front of the
+ *  solution and end is the back of the solution. */
 template <Distance Width, Distance Height>
 auto operator<<(
     std::ostream& os,
@@ -62,11 +61,12 @@ auto operator<<(
     -> std::ostream&
 {
     auto const& [maze, solution] = maze_and_solution;
+    assert(!solution.empty());
     for (Distance y = 0; y < Height; ++y) {
         for (Distance x = 0; x < Width; ++x) {
-            if (maze.start() == Point{x, y})
+            if (solution.front() == Point{x, y})
                 os << 'S';
-            else if (maze.end() == Point{x, y})
+            else if (solution.back() == Point{x, y})
                 os << 'E';
             else if (detail::contains(solution, {x, y}))
                 os << '.';

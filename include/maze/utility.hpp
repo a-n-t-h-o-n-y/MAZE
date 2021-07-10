@@ -5,6 +5,7 @@
 #include <iterator>
 #include <optional>
 #include <random>
+#include <stdexcept>
 
 #include <maze/cell.hpp>
 #include <maze/direction.hpp>
@@ -60,6 +61,7 @@ template <Distance Width, Distance Height>
             return (p.x - 1 < 0)
                        ? std::nullopt
                        : std::optional<Point>{{(Distance)(p.x - 1), p.y}};
+        default: throw std::logic_error{"Invalid Direction"};
     }
 }
 
@@ -71,6 +73,7 @@ template <Distance Width, Distance Height>
         case Direction::South: return Direction::North;
         case Direction::East: return Direction::West;
         case Direction::West: return Direction::East;
+        default: throw std::logic_error{"Invalid Direction"};
     }
 }
 
@@ -93,6 +96,111 @@ template <Distance Width, Distance Height>
     }
     return passage_count == 1;
 }
+
+/// Iterator wrapper that returns the dereference of the value_t on operator*.
+template <std::random_access_iterator Iter>
+class Dereference_iterator {
+   public:
+    using value_type        = decltype(*std::declval<Iter::value_type>());
+    using difference_type   = typename Iter::difference_type;
+    using pointer           = value_type*;
+    using reference         = value_type&;
+    using iterator_category = typename Iter::iterator_category;
+
+   public:
+    explicit Dereference_iterator(Iter iter) : iter_{iter} {}
+
+   public:
+    // check decltype auto is correct
+    auto operator*() const -> decltype(auto) { return *(*iter_); }
+
+    auto operator++() -> Dereference_iterator&
+    {
+        ++iter_;
+        return *this;
+    }
+
+    [[nodiscard]] auto operator++(int) -> Dereference_iterator
+    {
+        return Dereference_iterator{iter_++};
+    }
+
+    auto operator+=(difference_type n) -> Dereference_iterator&
+    {
+        iter_ += n;
+        return *this;
+    }
+
+    [[nodiscard]] auto operator+(difference_type n) const
+        -> Dereference_iterator
+    {
+        Dereference_iterator{iter_ + n};
+    }
+
+    [[nodiscard]] friend auto operator+(difference_type n,
+                                        Dereference_iterator const& iter)
+        -> Dereference_iterator
+    {
+        Dereference_iterator{iter + n};
+    }
+
+    auto operator-=(difference_type n) -> Dereference_iterator&
+    {
+        iter_ -= n;
+        return *this;
+    }
+
+    [[nodiscard]] auto operator-(difference_type n) const
+        -> Dereference_iterator
+    {
+        Dereference_iterator{iter_ - n};
+    }
+
+    [[nodiscard]] auto operator-(Dereference_iterator const& other) const
+        -> difference_type
+    {
+        return iter_ - other.iter_;
+    }
+
+    [[nodiscard]] auto operator[](difference_type n) -> decltype(auto)
+    {
+        return iter_[n];
+    }
+
+   public:
+    [[nodiscard]] auto operator==(Dereference_iterator const& other) -> bool
+    {
+        return iter_ == other.iter_;
+    }
+
+    [[nodiscard]] auto operator!=(Dereference_iterator const& other) -> bool
+    {
+        return iter_ != other.iter_;
+    }
+
+    [[nodiscard]] auto operator<(Dereference_iterator const& other) -> bool
+    {
+        return iter_ < other.iter_;
+    }
+
+    [[nodiscard]] auto operator<=(Dereference_iterator const& other) -> bool
+    {
+        return iter_ <= other.iter_;
+    }
+
+    [[nodiscard]] auto operator>(Dereference_iterator const& other) -> bool
+    {
+        return iter_ > other.iter_;
+    }
+
+    [[nodiscard]] auto operator>=(Dereference_iterator const& other) -> bool
+    {
+        return iter_ >= other.iter_;
+    }
+
+   private:
+    Iter iter_;
+};
 
 }  // namespace maze::utility
 #endif  // MAZE_UTILITY_HPP
