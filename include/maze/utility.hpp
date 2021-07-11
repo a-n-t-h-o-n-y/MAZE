@@ -290,5 +290,14 @@ struct Point_diff {
     return dist(random_gen);
 }
 
+[[nodiscard]] constexpr auto ceil(float x) -> Distance
+{
+    Distance const dist_x = static_cast<Distance>(x);
+    if (static_cast<float>(dist_x) == x)
+        return dist_x;
+    else
+        return dist_x + 1;
+}
+
 }  // namespace maze::utility
 #endif  // MAZE_UTILITY_HPP

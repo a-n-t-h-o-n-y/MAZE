@@ -2,6 +2,7 @@
 #include <utility>
 
 #include <maze/display.hpp>
+#include <maze/generate_aldous_broder.hpp>
 #include <maze/generate_kruskal.hpp>
 #include <maze/generate_prims.hpp>
 #include <maze/generate_recursive_backtracking.hpp>
@@ -33,6 +34,11 @@ int main()
     auto const p_solution = longest_path(p_maze);
     std::cout << std::pair{p_maze, p_solution} << '\n';
     std::cout << "Steps: " << p_solution.size() << '\n';
+
+    auto ab_maze           = generate_aldous_broder<width, height>();
+    auto const ab_solution = longest_path(ab_maze);
+    std::cout << std::pair{ab_maze, ab_solution} << '\n';
+    std::cout << "Steps: " << ab_solution.size() << '\n';
 
     // maze::graph::Adjacency_list<maze::Point> al;
     // add_undirected_edge(al, {7, 3}, {3, 3});

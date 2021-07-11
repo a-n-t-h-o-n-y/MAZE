@@ -81,15 +81,6 @@ template <Distance Width, Distance Height>
     return result;
 }
 
-[[nodiscard]] constexpr auto ceil(float x) -> Distance
-{
-    Distance const dist_x = static_cast<Distance>(x);
-    if (static_cast<float>(dist_x) == x)
-        return dist_x;
-    else
-        return dist_x + 1;
-}
-
 }  // namespace maze::detail
 
 namespace maze {
@@ -99,8 +90,8 @@ namespace maze {
 template <Distance Width, Distance Height>
 [[nodiscard]] auto generate_kruskal() -> Maze<Width, Height>
 {
-    constexpr Distance half_width  = detail::ceil(Width / 2.);
-    constexpr Distance half_height = detail::ceil(Height / 2.);
+    constexpr Distance half_width  = utility::ceil(Width / 2.);
+    constexpr Distance half_height = utility::ceil(Height / 2.);
     auto all_edges = detail::generate_all_maze_edges<half_width, half_height>();
 
     detail::randomize(all_edges);
