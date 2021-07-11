@@ -1,6 +1,6 @@
 # MAZE 🌽
 
-C++20 Maze generation and solution finder library.
+C++20 Maze generation and solution finder library. Header Only.
 
 ## Build
 

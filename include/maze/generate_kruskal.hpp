@@ -8,19 +8,13 @@
 
 #include <maze/cell.hpp>
 #include <maze/distance.hpp>
+#include <maze/edge.hpp>
 #include <maze/graph/disjoint_set.hpp>
 #include <maze/maze.hpp>
 #include <maze/point.hpp>
 #include <maze/utility.hpp>
 
 namespace maze::detail {
-
-struct Edge {
-    maze::Point a;
-    maze::Point b;
-
-    friend auto operator<=>(Edge, Edge) = default;
-};
 
 /// Returns a list of all possible connected edges in a maze.
 template <Distance Width, Distance Height>
@@ -112,7 +106,7 @@ template <Distance Width, Distance Height>
 
 namespace maze {
 
-/// Generate a maze with a random kruskal mst algorithm.
+/// Generate a maze with a randomized Kruskal's MST algorithm.
 /** Maze size should be odd to completely fill Maze. */
 template <Distance Width, Distance Height>
 [[nodiscard]] auto generate_kruskal() -> Maze<Width, Height>
