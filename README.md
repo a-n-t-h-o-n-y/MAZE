@@ -7,6 +7,7 @@ C++20 Maze generation and solution finder library. Header Only.
 - Recursive Backtracking
 - Randomized Kruskal's
 - Randomized Prim's
+- Aldous Broder
 
 ## Build
 
