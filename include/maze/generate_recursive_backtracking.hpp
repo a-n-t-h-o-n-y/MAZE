@@ -30,6 +30,30 @@ void do_recursive_backtrack(Maze<Width, Height>& maze, Point const at)
     }
 }
 
+/// Return true if \p d is odd.
+[[nodiscard]] inline auto is_odd(Distance d) -> bool { return (d % 2) == 1; }
+
+/// Makes a single value even, without going over Limit.
+template <Distance Limit>
+[[nodiscard]] auto make_even(Distance const at) -> Distance
+{
+    if (is_odd(at)) {
+        if (at + 1 >= Limit)
+            return at - 1;
+        else
+            return at + 1;
+    }
+    else
+        return at;
+}
+
+/// Returns a point that has coordinates that are even and within limits(W/H).
+template <Distance Width, Distance Height>
+[[nodiscard]] auto make_even(maze::Point p) -> maze::Point
+{
+    return {make_even<Width>(p.x), make_even<Height>(p.y)};
+}
+
 }  // namespace maze::detail
 
 namespace maze {
@@ -38,8 +62,10 @@ namespace maze {
 template <Distance Width, Distance Height>
 [[nodiscard]] auto generate_recursive_backtracking() -> Maze<Width, Height>
 {
-    auto const start = utility::random_point<Width, Height>();
-    auto maze        = Maze<Width, Height>{Cell::Wall};
+    auto start = utility::random_point<Width, Height>();
+    // Less unused space if coordinates are even.
+    start     = detail::make_even<Width, Height>(start);
+    auto maze = Maze<Width, Height>{Cell::Wall};
     maze.set(start, Cell::Passage);
     detail::do_recursive_backtrack(maze, start);
     return maze;
