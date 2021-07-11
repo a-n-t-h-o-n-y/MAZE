@@ -3,6 +3,7 @@
 
 #include <maze/display.hpp>
 #include <maze/generate_kruskal.hpp>
+#include <maze/generate_prims.hpp>
 #include <maze/generate_recursive_backtracking.hpp>
 #include <maze/graph/adjacency_list.hpp>
 #include <maze/graph/connected_components.hpp>
@@ -13,19 +14,25 @@
 
 int main()
 {
-    constexpr auto width  = 40;
-    constexpr auto height = 20;
+    constexpr auto width  = 41;
+    constexpr auto height = 21;
 
     using namespace maze;
     auto const maze     = generate_recursive_backtracking<width, height>();
     auto const solution = longest_path(maze);
 
-    std::cout << std::pair{maze, solution};
+    std::cout << std::pair{maze, solution} << '\n';
     std::cout << "Steps: " << solution.size() << '\n';
 
     auto k_maze           = generate_kruskal<width, height>();
     auto const k_solution = longest_path(k_maze);
     std::cout << std::pair{k_maze, k_solution} << '\n';
+    std::cout << "Steps: " << k_solution.size() << '\n';
+
+    auto p_maze           = generate_prims<width, height>();
+    auto const p_solution = longest_path(p_maze);
+    std::cout << std::pair{p_maze, p_solution} << '\n';
+    std::cout << "Steps: " << p_solution.size() << '\n';
 
     // maze::graph::Adjacency_list<maze::Point> al;
     // add_undirected_edge(al, {7, 3}, {3, 3});

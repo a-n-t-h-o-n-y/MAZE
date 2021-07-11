@@ -63,21 +63,6 @@ template <Distance Width, Distance Height>
     return result;
 }
 
-[[nodiscard]] auto times_two(Point p) -> Point
-{
-    return {(Distance)(p.x * 2), (Distance)(p.y * 2)};
-}
-
-[[nodiscard]] auto subtract(Point a, Point b) -> Point
-{
-    return {(Distance)(a.x - b.x), (Distance)(a.y - b.y)};
-}
-
-[[nodiscard]] auto add(Point a, Point b) -> Point
-{
-    return {(Distance)(a.x + b.x), (Distance)(a.y + b.y)};
-}
-
 // Width and Height are the 2d Sureface values.
 template <Distance Width, Distance Height>
 [[nodiscard]] auto translate_to_maze(std::set<Edge> const& edges)
@@ -85,6 +70,9 @@ template <Distance Width, Distance Height>
 {
     auto result = maze::Maze<Width, Height>{Cell::Wall};
     for (auto edge : edges) {
+        using utility::add;
+        using utility::subtract;
+        using utility::times_two;
         result.set(times_two(edge.a), Cell::Passage);
         result.set(times_two(edge.b), Cell::Passage);
         auto const between = add(times_two(edge.a), subtract(edge.b, edge.a));

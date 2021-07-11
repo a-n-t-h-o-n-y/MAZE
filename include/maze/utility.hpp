@@ -2,6 +2,7 @@
 #define MAZE_UTILITY_HPP
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <iterator>
 #include <optional>
 #include <random>
@@ -19,6 +20,19 @@ inline auto random_gen = std::mt19937{std::random_device{}()};
 
 inline constexpr auto directions = std::array{
     Direction::North, Direction::South, Direction::East, Direction::West};
+
+/// Take this as a function parameter with deduced template Direction type.
+template <Direction...>
+struct Directions_pack {};
+
+/// Use this to call a function taking a Directions_pack.
+auto make_directions_pack() -> Directions_pack<Direction::North,
+                                               Direction::South,
+                                               Direction::East,
+                                               Direction::West>
+{
+    return {};
+}
 
 /// Return all four Directions in a random order.
 [[nodiscard]] auto shuffled_directions() -> std::array<Direction, 4>
@@ -201,6 +215,80 @@ class Dereference_iterator {
    private:
     Iter iter_;
 };
+
+/// Return true if \p d is odd.
+[[nodiscard]] inline auto is_odd(Distance d) -> bool { return (d % 2) == 1; }
+
+/// Makes a single value even, without going over Limit.
+template <Distance Limit>
+[[nodiscard]] auto make_even(Distance const at) -> Distance
+{
+    if (utility::is_odd(at)) {
+        if (at + 1 >= Limit)
+            return at - 1;
+        else
+            return at + 1;
+    }
+    else
+        return at;
+}
+
+/// Returns a point that has coordinates that are even and within limits(W/H).
+template <Distance Width, Distance Height>
+[[nodiscard]] auto make_even(maze::Point p) -> maze::Point
+{
+    return {make_even<Width>(p.x), make_even<Height>(p.y)};
+}
+
+[[nodiscard]] auto times_two(Point p) -> Point
+{
+    return {(Distance)(p.x * 2), (Distance)(p.y * 2)};
+}
+
+/// Result of subtracting two Distances.
+using Distance_diff = std::int16_t;
+
+struct Point_diff {
+    Distance_diff x;
+    Distance_diff y;
+};
+
+[[nodiscard]] auto subtract(Point a, Point b) -> Point_diff
+{
+    return {(Distance_diff)(a.x - b.x), (Distance_diff)(a.y - b.y)};
+}
+
+[[nodiscard]] auto add(Point a, Point b) -> Point
+{
+    return {(Distance)(a.x + b.x), (Distance)(a.y + b.y)};
+}
+
+[[nodiscard]] auto add(Point a, Point_diff b) -> Point
+{
+    return {(Distance)(a.x + b.x), (Distance)(a.y + b.y)};
+}
+
+[[nodiscard]] auto add(Point_diff a, Point b) -> Point
+{
+    return {(Distance)(a.x + b.x), (Distance)(a.y + b.y)};
+}
+
+[[nodiscard]] auto half(Point p) -> Point
+{
+    return {(Distance)(p.x / 2), (Distance)(p.y / 2)};
+}
+
+[[nodiscard]] auto half(Point_diff p) -> Point_diff
+{
+    return {(Distance_diff)(p.x / 2), (Distance_diff)(p.y / 2)};
+}
+
+/// Generates a random index from [0, limit].
+[[nodiscard]] auto random_index(std::size_t limit) -> std::size_t
+{
+    auto dist = std::uniform_int_distribution<std::size_t>{0, limit};
+    return dist(random_gen);
+}
 
 }  // namespace maze::utility
 #endif  // MAZE_UTILITY_HPP
