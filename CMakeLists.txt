@@ -21,5 +21,5 @@ target_compile_options(maze-lib
 )
 
 # Tests
-add_executable(maze-test tests/test.main.cpp)
+add_executable(maze-test EXCLUDE_FROM_ALL tests/test.main.cpp)
 target_link_libraries(maze-test PUBLIC maze-lib)
