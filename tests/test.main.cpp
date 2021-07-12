@@ -6,6 +6,7 @@
 #include <maze/generate_kruskal.hpp>
 #include <maze/generate_prims.hpp>
 #include <maze/generate_recursive_backtracking.hpp>
+#include <maze/generate_recursive_division.hpp>
 #include <maze/graph/adjacency_list.hpp>
 #include <maze/graph/connected_components.hpp>
 #include <maze/graph/disjoint_set.hpp>
@@ -39,6 +40,11 @@ int main()
     auto const ab_solution = longest_path(ab_maze);
     std::cout << std::pair{ab_maze, ab_solution} << '\n';
     std::cout << "Steps: " << ab_solution.size() << '\n';
+
+    auto rd_maze           = generate_recursive_division<width, height>();
+    auto const rd_solution = longest_path(rd_maze);
+    std::cout << std::pair{rd_maze, rd_solution} << '\n';
+    std::cout << "Steps: " << rd_solution.size() << '\n';
 
     // maze::graph::Adjacency_list<maze::Point> al;
     // add_undirected_edge(al, {7, 3}, {3, 3});
